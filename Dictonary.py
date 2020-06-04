@@ -1,45 +1,74 @@
-myDict = {1:'java',
-          2:'c',
-          3:'python',
-          }
+#Dictionary
+#this is un orderd key value pair
+#dict use more memory - key & values
+dictanory = {
+  'a':[1,2,3,4],
+  'b':'hello',
+  'c':1
+}
 
-print(myDict)
-print(type(myDict))
+print(dictanory)
 
-myDict[1] ='html'
-myDict[4]='javascript'
-print(myDict)
+dictanory2 ={
+  123 :[1,2,3,4],
+  True:'hello',
+  '[100]':100
+}
 
-myDict.pop(1)
-print(myDict)
-myDict.__delitem__(3)
-#myDict.clear(2)
-print(myDict)
-newDict = dict(JAVA=1)
-print(newDict)
-print(type(myDict))
+#keys in the dict should be a immutable value , that means it cnnot be chged aftre the dicleration
+print(dictanory2)
 
-print(myDict)
-print(myDict.keys())
-print(myDict.items())
-print(myDict.values())
-print(myDict.get(1))
-print(myDict.get(2))
-print(myDict.get(3))
+#when we insert same key with two values , then the second value will over ride the first Value
 
-print('normal for loop')
-for x in myDict:
-    print(x)
+user ={
+  'name' :'pasindu',
+  'age' :24,
+  'marks' :10
+}
 
-print('full detail loop')
-for x in myDict.items():
-    print(x)
+#this will print the user details
+print(user)
 
-print('values only looping')
-for x in myDict.values():
-    print(x)
+#this print the age of the user, if didnt exists then print 30
+print(user.get('age',30))
 
-import pandas as pd
+#this print the job of the user, if didnt exists then print student
+print(user.get('job','student'))
 
-c = pd.DataFrame(myDict)
-print(pd)
+print(user)
+
+#this is a nother way of creatig the user
+user2 =dict(name='pasindu')
+
+print(user2)
+
+print('name' in user)
+print('name' in user.keys())
+print( user.items())
+
+user3=user.copy()
+user.clear()
+print(user)
+print(user3)
+user.update({'age':30})
+print(user)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
