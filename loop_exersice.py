@@ -1,10 +1,18 @@
-#compile
+picture = [
+    [0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 1, 1, 1, 0, 0],
+    [0, 1, 1, 1, 1, 1, 0],
+    [1, 1, 1, 1, 1, 1, 1],
+    [0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0],
+]
 
-my_list =[1,2,3,4,5,6,7,8,9,10]
+for row in picture:
+    for pixel in row:
+        if (pixel == 1):
+            print("*", end='')
 
-counter = 0
-for number in my_list:
-  print(f'number is {number}')
-  counter=number+counter;
+        else:
+            print(" ", end='')
 
-print(f'total is {counter}')
+    print("")
