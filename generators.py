@@ -19,3 +19,8 @@ for item in generator_function(100):
     print(item)
 
 print(generator_function())
+
+g= generator_function(100)
+next(g)
+next(g)
+print(next(g))
