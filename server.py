@@ -1,23 +1,19 @@
-from flask import Flask,render_template
-app = Flask(__name__)
+from flask import Flask,render_template,Response
+app = Flask(__name__,template_folder = 'templates')
+print(__name__)
 
 @app.route('/')
 def hello_world():
     return render_template('index.html')
 
-@app.route('/about.html')
-def hello_world():
-    return render_template('about.html')
-
-hello_world()
-
 @app.route('/blog')
 def blog():
-    return 'Hello,This is my blog :)'
+    return 'Hello, Welcome to My Blog'
 
-@app.route('/blog/2020/dog')
-def blog():
-    return 'Hello,This is my dog ,"sheery" :)'
+@app.route('/blog/2020')
+def blog2():
+    return 'Hello, My Dog is Sheery'
+
 
 hello_world()
 
