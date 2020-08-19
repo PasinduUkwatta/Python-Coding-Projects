@@ -1,37 +1,59 @@
-from flask import Flask,request
-from flask_restful import Resource,Api
-from flask_jwt import JWT, jwt_required
-from security import authenticate,identity
-
+from flask import Flask, request, jsonify
+import mysql.connector
 
 app = Flask(__name__)
-app.secret_key='test'
-api=Api(app)
 
-jwt = JWT(app,authenticate,identity)
+@app.route('/', methods=['POST'])
+def home():
+    result = [{'msg': 'success'}, {'stat': '200 ok'}]
+    if request.method == 'POST':
+        sign_in_details= request.get_json()
+        email = sign_in_details['email']
+        password = sign_in_details['password']
+      
+        connection = mysql.connector.connect(host="localhost", user="root", password="1234", database="sample_project_db")
+        mycursor = connection.cursor()
+        query = "INSERT INTO  sign_in(email, password) VALUES (%s,%s)"
+        val = (email, password)
+        mycursor.execute(query, val)
+        connection.commit()
+        return jsonify({'result': result})
 
-items =[]
+@app.route('/sign-in', methods=['POST'])
+def sign_in():
+    result = [{'msg': 'success'}, {'stat': '200 ok'}]
+    if request.method == 'POST':
+        sign_in_details= request.get_json()
+        email = sign_in_details['email']
+        password = sign_in_details['password']
+      
+        connection = mysql.connector.connect(host="localhost", user="root", password="1234", database="sample_project_db")
+        mycursor = connection.cursor()
+        query = "INSERT INTO  sign_in(email, password) VALUES (%s,%s)"
+        val = (email, password)
+        mycursor.execute(query, val)
+        connection.commit()
+        return jsonify({'result': result})
 
-class Item(Resource):
-    @jwt_required()
-    def get(self,name):
-        item =next(filter(lambda x:x['name']==name,items),None)
-        return{'item':None},200 if item else 404
+@app.route('/sign-up', methods=['POST'])
+def sign_up():
+    result = [{'msg': 'success'}, {'stat': '200 ok'}]
+    if request.method == 'POST':
+        sign_up_details= request.get_json()
+        firstname = sign_up_details['email']
+        lastname = sign_up_details['email']
+        email = sign_up_details['email']
+        password = sign_up_details['password']
+      
+        connection = mysql.connector.connect(host="localhost", user="root", password="1234", database="sample_project_db")
+        mycursor = connection.cursor()
+        query = "INSERT INTO  users(first_name,last_name,email, password) VALUES (%s,%s,%s,%s)"
+        val = (firstname, lastname,email, password)
+        mycursor.execute(query, val)
+        connection.commit()
+        return jsonify({'result': result})
 
-    def post(self,name):
-        if next(filter(lambda x:x['name']==name,items),None) :
-            return {'message':"An item with name '{}' already exists .".format(name)},400
 
-        data=request.get_json()
-        item={'name':name,'price':data['price']}
-        items.append(item)
-        return item,201
 
-class ItemList(Resource):
-    def get(self):
-        return {'items':items}
-
-api.add_resource(Item,'/item/<string:name>')
-api.add_resource(ItemList,'/items')
-
-app.run(port=5000,debug=True)
+if __name__ == "__main__":
+    app.run(debug=True)
