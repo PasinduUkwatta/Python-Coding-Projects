@@ -1,59 +1,75 @@
-from flask import Flask, request, jsonify
-import mysql.connector
+from flask import Flask, jsonify, request,render_template
 
 app = Flask(__name__)
 
-@app.route('/', methods=['POST'])
+stores = [
+    {
+        'name': 'my Wonderful Store',
+        'items':
+            [
+                {
+                    'name': 'My Item',
+                    'price': 15
+                }
+            ]
+    }
+]
+
+
+@app.route('/')
 def home():
-    result = [{'msg': 'success'}, {'stat': '200 ok'}]
-    if request.method == 'POST':
-        sign_in_details= request.get_json()
-        email = sign_in_details['email']
-        password = sign_in_details['password']
-      
-        connection = mysql.connector.connect(host="localhost", user="root", password="1234", database="sample_project_db")
-        mycursor = connection.cursor()
-        query = "INSERT INTO  sign_in(email, password) VALUES (%s,%s)"
-        val = (email, password)
-        mycursor.execute(query, val)
-        connection.commit()
-        return jsonify({'result': result})
+    return render_template('index.html')
 
-@app.route('/sign-in', methods=['POST'])
-def sign_in():
-    result = [{'msg': 'success'}, {'stat': '200 ok'}]
-    if request.method == 'POST':
-        sign_in_details= request.get_json()
-        email = sign_in_details['email']
-        password = sign_in_details['password']
-      
-        connection = mysql.connector.connect(host="localhost", user="root", password="1234", database="sample_project_db")
-        mycursor = connection.cursor()
-        query = "INSERT INTO  sign_in(email, password) VALUES (%s,%s)"
-        val = (email, password)
-        mycursor.execute(query, val)
-        connection.commit()
-        return jsonify({'result': result})
 
-@app.route('/sign-up', methods=['POST'])
-def sign_up():
-    result = [{'msg': 'success'}, {'stat': '200 ok'}]
-    if request.method == 'POST':
-        sign_up_details= request.get_json()
-        firstname = sign_up_details['email']
-        lastname = sign_up_details['email']
-        email = sign_up_details['email']
-        password = sign_up_details['password']
-      
-        connection = mysql.connector.connect(host="localhost", user="root", password="1234", database="sample_project_db")
-        mycursor = connection.cursor()
-        query = "INSERT INTO  users(first_name,last_name,email, password) VALUES (%s,%s,%s,%s)"
-        val = (firstname, lastname,email, password)
-        mycursor.execute(query, val)
-        connection.commit()
-        return jsonify({'result': result})
+@app.route('/store', methods=['POST'])
+def create_store():
+    request_data = request.get_json()
+    new_store = {
+        'name': request_data['name'],
+        'items': []
+    }
+    stores.append(new_store)
+    return jsonify(new_store)
+
+
+@app.route('/store/<string:name>')
+def get_store(name):
+    for store in stores:
+        if store['name'] == name:
+            return jsonify(store)
+
+    return jsonify({'message': 'store not found'})
+
+
+@app.route('/store')
+def get_stores():
+    return jsonify({'stores': stores})
+
+
+@app.route('/store/<string:name>/item', methods=['POST'])
+def create_item_in_store(name):
+    request_data = request.get_json()
+    for store in stores:
+        if store['name']==name:
+            new_item={
+                'name':request_data['name'],
+                'price':request_data['price'],
+            }
+            store['items'].append(new_item)
+            return jsonify(new_item)
+
+    return jsonify({'message':'store not found'})
 
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+@app.route('/store/<string:name>/item')
+def get_item_in_store(name):
+    
+    for store in stores:
+        if store['name']==name:
+            return jsonify(store['items'])
+
+    return jsonify({'message':'store is not found'})
+
+
+app.run(port=5000)
