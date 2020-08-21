@@ -1,51 +1,28 @@
-import unittest
-from unit_test import main
-from unit_test import calculator
+import sqlite3
+
+connection =sqlite3.connect('data.db')
+
+cursor = connection.cursor()
+
+create_table = "CREATE TABLE users(id int,username text,password text )"
+cursor.execute(create_table)
+
+user =(1,'john','smith')
+insert_query="INSERT INTO users VALUES (?,?,?)"
+cursor.execute(insert_query,user)
+
+users =[
+
+(2,'mike','white'),
+(3,'bob','dilan')
+]
+cursor.executemany(insert_query, users)
+
+selected_query ="SELECT * FROM users"
+
+for row in cursor.execute(selected_query):
+    print(row)
 
 
-class TestMain(unittest.TestCase):
-
-    def setUp(self):
-        print(' test a function')
-
-    def test_do_stuff(self):
-        test_param = 10
-        result = main.do_stuff(test_param)
-        self.assertEqual(result, 15)
-
-    def test_add(self):
-        test_num1 = 5
-        test_num2 = 3
-        result = calculator.add(test_num1, test_num2)
-        self.assertEqual(result, 8)
-
-    def test_sub(self):
-        test_num1 = 5
-        test_num2 = 3
-        result = calculator.sub(test_num1, test_num2)
-        self.assertEqual(result, 2)
-
-    def test_mul(self):
-        test_num1 = 5
-        test_num2 = 3
-        result = calculator.mul(test_num1, test_num2)
-        self.assertEqual(result, 15)
-
-    def test_div(self):
-        test_num1 = 6
-        test_num2 = 3
-        result = calculator.div(test_num1, test_num2)
-        self.assertEqual(result, 2)
-
-    def test_rem(self):
-        test_num1 = 5
-        test_num2 = 3
-        result = calculator.rem(test_num1, test_num2)
-        self.assertEqual(result, 2)
-
-    def tearDown(self):
-        print('cleaning up ')
-
-
-if __name__ == '__main__':
-    unittest.main()
+connection.commit()
+connection.close()
