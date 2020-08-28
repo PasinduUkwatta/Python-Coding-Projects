@@ -1,76 +1,45 @@
-from flask import Flask,jsonify,request
+from flask import Flask, request, jsonify,flash
+import mysql.connector
+from flask_cors import CORS,cross_origin
+from mysql.connector import Error
+import bcrypt
 
 app = Flask(__name__)
-
-user_sign_in_details=[
-{
-	'email':'abc@gmail.com',
-	'password':'1234'
-}
-
-]
-
-user_sign_up_details=[
-{
-	'firstname':'abc',
-	'lastname':'def',
-	'email':'abc@gmail.com',
-	'password':'1234',
-}
-
-]
+CORS(app)
+app.config['JSON_ADD_STATUS'] = True
 
 
-@app.route('/',methods ={'POST'})
-def home():
-	request_data =request.get_json()
-	sign_in_details={
-	'email':request_data['email'],
-	'password':request_data['password']
-
-	}
-
-	user_sign_in_details.append(sign_in_details)
-	return jsonify(sign_in_details)
-
-@app.route('/')
-def get_sign_in_details_home():
-    return jsonify({'user_sign_in_details': user_sign_in_details})	
-
-@app.route('/sign-in',methods={'POST'})
+@app.route('/sign-in', methods=['POST'])
 def sign_in():
-	request_data =request.get_json()
-	sign_in_details={
-	'email':request_data['email'],
-	'password':request_data['password']
+    result = [{'msg': 'success'}, {'stat': '200 ok'}]
+    if request.method == 'POST':
+        sign_in_details= request.get_json()
+        email = sign_in_details['email']
+        password = sign_in_details['password']
+     
+        connection = mysql.connector.connect(host="localhost", user="root", password="1234", database="mydb")
+        mycursor = connection.cursor()
+        query = "INSERT INTO  sign_in(email, password) VALUES (%s,%s)"
+        val = (email, password)
+        mycursor.execute(query, val)
+        connection.commit()
+        return jsonify({'result': result})
 
-	}
 
-	user_sign_in_details.append(sign_in_details)
-	return jsonify(sign_in_details)
-
-@app.route('/sign-in')
-def get_sign_in_details():
-    return jsonify({'user_sign_in_details': user_sign_in_details})	
-
-@app.route('/sign-up',methods={'POST'})
+@app.route('/sign-up', methods=['POST'])
 def sign_up():
-	request_data =request.get_json()
-	sign_up_details={
-	'firstname':request_data['firstname'],
-	'lastname':request_data['lastname'],
-	'email':request_data['email'],
-	'password':request_data['password']
-
-	}
-
-	user_sign_up_details.append(sign_up_details)
-	return jsonify(sign_up_details)
-
-
-@app.route('/sign-up')
-def get_sign_up_details():
-    return jsonify({'user_sign_up_details': user_sign_up_details})	
-
-
-app.run(port=5000)
+    result = [{'msg': 'success'}, {'stat': '200 ok'}]
+    if request.method == 'POST':
+        sign_up_details= request.get_json()
+        firstname = sign_up_details['firstname']
+        lastname = sign_up_details['lastname']
+        email = sign_up_details['email']
+        password = sign_up_details['password']
+      
+        connection = mysql.connector.connect(host="localhost", user="root", password="1234", database="mydb")
+        mycursor = connection.cursor()
+        query = "INSERT INTO  users(first_name,last_name,email, password) VALUES (%s,%s,%s,%s)"
+        val = (firstname, lastname,email, password)
+        mycursor.execute(query, val)
+        connection.commit()
+        return jsonify({'result': result})
