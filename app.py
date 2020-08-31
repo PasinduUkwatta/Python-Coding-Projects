@@ -19,11 +19,11 @@ def sign_in():
         email = sign_in_details['email']
         password = sign_in_details['password']
 
-        hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        hashed_value =generate_password_hash(password)
         connection = mysql.connector.connect(host="localhost", user="root", password="1234", database="sample_project_db")
         mycursor = connection.cursor()
         query = "INSERT INTO  sign_in(email, password) VALUES (%s,%s)"
-        val = (email, hashed)
+        val = (email, hashed_value)
         mycursor.execute(query, val)
         connection.commit()
         return jsonify({'result': result})
@@ -37,7 +37,7 @@ def sign_in_get_all():
   
     connection = mysql.connector.connect(host="localhost", user="root", password="1234", database="sample_project_db")
     mycursor = connection.cursor()
-    mycursor.execute("SELECT email,password FROM sign_in")
+    mycursor.execute("SELECT email,password FROM users")
     results= mycursor.fetchall()
     connection.commit()
     return jsonify(results)
@@ -47,16 +47,58 @@ def sign_in_get():
     sign_in_get_details= request.get_json()
     email = sign_in_get_details['email']
     password = sign_in_get_details['password']
-  
+    hashed_password=generate_password_hash(password)
+    print(hashed_password)
+    
+
     connection = mysql.connector.connect(host="localhost", user="root", password="1234", database="sample_project_db")
     mycursor = connection.cursor()
-    sql="SELECT * FROM users Where email=%s AND password=%s "
+    sql="SELECT password FROM users Where email=%s LIMIT 1 "
+    
+    data_search=(email,)
+    
+   
+    mycursor.execute(sql,data_search)
+    results= mycursor.fetchone()[0]
+    print(str(results))
+    print(type(results))
+    connection.commit()
+    result=check_password_hash(results,password)
+    return str(result)
+    return jsonify({'results': results})
+   
+
+
+@app.route('/<password>', methods=['POST'])
+def pasword_hash(password):
+    hashed_value =generate_password_hash(password)
+    print(hashed_value)
+    stored_password='pbkdf2:sha256:150000$XDjeRCGn$7c8451de5476ff5c9ffbb038d2128cd0042032170d8b6388f0a8a9bf86f781b4'
+    print(stored_password)
+    result=check_password_hash(stored_password,password)
+    print(result)
+    return str(result)
+
+@app.route("/sign-in-get-without-hash",methods=['GET'])
+def sign_in_get_hash():
+    sign_in_get_details= request.get_json()
+    email = sign_in_get_details['email']
+    password = sign_in_get_details['password']
+    
+    
+
+    connection = mysql.connector.connect(host="localhost", user="root", password="1234", database="sample_project_db")
+    mycursor = connection.cursor()
+    sql="SELECT email,password FROM users Where email=%s AND password=%s "
+    
     data_search=(email,password)
+    
    
     mycursor.execute(sql,data_search)
     results= mycursor.fetchall()
+    print(results)
     connection.commit()
-    return jsonify({"results":results})
+    return jsonify({'results': results})
 
   
 @app.route('/sign-up', methods=['POST'])
@@ -69,12 +111,12 @@ def sign_up():
         email = sign_up_details['email']
         password = sign_up_details['password']
 
-        hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        hashed_value =generate_password_hash(password)
       
         connection = mysql.connector.connect(host="localhost", user="root", password="1234", database="sample_project_db")
         mycursor = connection.cursor()
-        query = "INSERT INTO  users(first_name,last_name,email, password) VALUES (%s,%s,%s,%s)"
-        val = (firstname, lastname,email, hashed)
+        query = "INSERTS INTO users(first_name,last_name,email, password) VALUES (%s,%s,%s,%s)"
+        val = (firstname, lastname,email, hashed_value)
         mycursor.execute(query, val)
         connection.commit()
         return jsonify({'result': result})
@@ -172,6 +214,9 @@ def business_get():
             connection.close()
             cursor.close()
             print("MySQL connection is closed")
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
