@@ -1,0 +1,4 @@
+from datetime import datetime
+>>> from zoneinfo import ZoneInfo
+>>> release = datetime(2020, 10, 5, 3, 9, tzinfo=ZoneInfo("America/Vancouver"))
+>>> release.astimezone(ZoneInfo("Europe/Oslo"))
