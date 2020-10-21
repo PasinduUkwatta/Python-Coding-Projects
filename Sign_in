@@ -1,0 +1,46 @@
+@app.route('/sign-in', methods=['POST'])
+def sign_in_check2():
+    if request.method == 'POST':
+        sign_in_details = request.get_json(silent=True, force=True)
+        email = sign_in_details['email']
+        password = sign_in_details['password']
+
+    connection = mysql.connector.connect(host=HOST_NAME, user=USER_NAME, password=PASSWORD, database=DATABASE)
+    mycursor = connection.cursor()
+    sql = "SELECT email FROM users Where email=%s"
+    data_search = (email,)
+    mycursor.execute(sql, data_search)
+    results = mycursor.fetchall()
+
+    if results:
+        sql = "SELECT password FROM users Where email=%s"
+        data_search = (email,)
+        mycursor.execute(sql, data_search)
+        results = mycursor.fetchone()[0]
+        result = bcrypt.check_password_hash(results, password)
+
+
+        if (result):
+            return jsonify({
+                                "message": "valid Email,valid Password",
+                                "result": result
+                                })
+
+
+        else:
+            return jsonify({
+                             "message": "Valid Email,Wrong Password",
+                             "result": result
+                                 })
+
+
+    else:
+        return jsonify({
+                          "message": "Invalid Email",
+                           "result": results
+                             })
+
+
+
+    print(results)
+    connection.commit()
