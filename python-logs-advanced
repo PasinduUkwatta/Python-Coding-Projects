@@ -1,0 +1,10 @@
+# Set up logging
+import logging
+
+log = "bot.log"
+
+logger = logging.getLogger('root')
+FORMAT = "[%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
+logging.basicConfig(filename=log,format=FORMAT)
+logger.setLevel(logging.DEBUG)
+logger.debug('your message')
