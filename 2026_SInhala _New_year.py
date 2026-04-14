@@ -1,0 +1,1 @@
+print("Happy sinhala and tamil new year 2026")
